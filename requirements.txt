@@ -110,7 +110,6 @@ scikit-learn
 scikit-optimize==0.8.1
 scipy
 Send2Trash
-Shapely==1.7.1
 sip==4.19.13
 six
 sktime==0.6.0

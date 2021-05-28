@@ -4,3 +4,4 @@ python3-geopandas
 python3-rtree
 python3-fiona
 python3-tz
+python3-shapely
