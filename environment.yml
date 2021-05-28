@@ -98,6 +98,7 @@ dependencies:
   - libnetcdf=4.8.0
   - libpng=1.6.37
   - libpq=13.3
+  - libgcc
   - libprotobuf=3.16.0
   - librttopo=1.1.0
   - libsodium=1.0.18
