@@ -98,7 +98,6 @@ dependencies:
   - libnetcdf=4.8.0
   - libpng=1.6.37
   - libpq=13.3
-  - libgcc
   - libprotobuf=3.16.0
   - librttopo=1.1.0
   - libsodium=1.0.18
@@ -157,6 +156,8 @@ dependencies:
   - python-dateutil=2.8.1
   - python_abi=3.8
   - pytz=2021.1
+  - pywin32=300
+  - pywinpty=1.1.1
   - pyyaml=5.4.1
   - pyzmq=22.1.0
   - re2=2021.04.01
@@ -185,11 +186,16 @@ dependencies:
   - tzlocal=2.1
   - urllib3=1.26.5
   - validators=0.18.2
+  - vc=14.2
+  - vs2015_runtime=14.28.29325
   - watchdog=2.1.2
   - wcwidth=0.2.5
   - webencodings=0.5.1
   - wheel=0.36.2
   - widgetsnbextension=3.5.1
+  - win_inet_pton=1.1.0
+  - wincertstore=0.2
+  - winpty=0.4.3
   - xerces-c=3.2.3
   - xz=5.2.5
   - yaml=0.2.5
