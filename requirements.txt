@@ -109,7 +109,6 @@ ruamel-yaml==0.15.87
 scikit-learn
 scikit-optimize==0.8.1
 scipy
-sip==4.19.13
 six
 sktime==0.6.0
 smmap==4.0.0
