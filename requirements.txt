@@ -36,7 +36,6 @@ Fiona==1.8.19
 free-proxy==1.0.2
 fsspec==0.8.7
 future==0.18.2
-GDAL==3.2.2 
 GitPython==3.1.14
 google-auth==1.29.0
 google-auth-oauthlib==0.4.4
