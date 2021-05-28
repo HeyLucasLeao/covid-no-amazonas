@@ -1,5 +1,4 @@
 gdal-bin
-python3-pyproj
 python3-geopandas
 python-rtree
 python-fiona
