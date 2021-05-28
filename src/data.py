@@ -46,24 +46,6 @@ gjson_municipios_amazonas.set_index('id', inplace=True)
 
 #Importar DataFrame principal
 
-url = 'https://github.com/wcota/covid19br/blob/master/cases-brazil-cities-time.csv.gz?raw=true'
-df = pd.read_csv(url, compression='gzip', usecols=[
-                                                    'date', 
-                                                    'state', 
-                                                    'city', 
-                                                    'newDeaths', 
-                                                    'deaths', 
-                                                    'newCases', 
-                                                    'totalCases', 
-                                                    'deaths_per_100k_inhabitants', 
-                                                    'totalCases_per_100k_inhabitants',
-                                                    'deaths_by_totalCases'
-                                                    ])
-df['date'] = pd.to_datetime(df['date'])
-df = df.query("city != 'TOTAL'")
-df['city'] = [x for x in df['city'] if x[:28] != 'CASO SEM LOCALIZAÇÃO DEFINIDA']
-df.sort_values('totalCases', ascending=False,inplace=True)
-
 #Importar dados de Ocupação em Hospital
 normalized_csvs = listdir(PATH_CSV_NORMALIZED)
 dici = {'leitos_clinicos_covid-19': 'Leitos Clínicos (Covid-19)',
@@ -89,6 +71,24 @@ ocupacao_em_hospitais['Data'] = pd.to_datetime(ocupacao_em_hospitais['Data'])
 ocupacao_em_hospitais.fillna(0, inplace=True)
 last_info = ocupacao_em_hospitais['Data'].tail(1)
 last_info = str(last_info).split()[1]
+
+url = 'https://github.com/wcota/covid19br/blob/master/cases-brazil-cities-time.csv.gz?raw=true'
+df = pd.read_csv(url, compression='gzip', usecols=[
+                                                    'date', 
+                                                    'state', 
+                                                    'city', 
+                                                    'newDeaths', 
+                                                    'deaths', 
+                                                    'newCases', 
+                                                    'totalCases', 
+                                                    'deaths_per_100k_inhabitants', 
+                                                    'totalCases_per_100k_inhabitants',
+                                                    'deaths_by_totalCases'
+                                                    ])
+df['date'] = pd.to_datetime(df['date'])
+df = df.query("city != 'TOTAL'")
+df['city'] = [x for x in df['city'] if x[:28] != 'CASO SEM LOCALIZAÇÃO DEFINIDA']
+df.sort_values('totalCases', ascending=False,inplace=True)
 
 #Var1
 total_de_casos_amazonas = df.query("state == 'AM'").groupby('date').sum()
@@ -122,6 +122,15 @@ total_por_estado = pd.read_csv('https://raw.githubusercontent.com/wcota/covid19b
 total_por_estado = total_por_estado.query(f"date == '{last_info}' and state != 'TOTAL'")
 dici = dict([(x,y) for x,y in zip(gjson_estados_brasileiros['sigla'], gjson_estados_brasileiros['name'])])
 total_por_estado['name'] = [dici[x] for x in total_por_estado['state']]
+
+total_estado_novos_casos = total_por_estado.query(
+            f"state == 'AM' and date == '{last_info}'")['newCases'].values[0]
+total_novos_casos = df.query(f"state == 'AM' and last_info_date == '{last_info}' and city != 'CASO SEM LOCALIZAÇÃO DEFINIDA/AM'")[
+            'newCases'].sum()
+            
+if total_estado_novos_casos <= 0 and total_novos_casos <= 0:
+    total_por_estado.drop(total_por_estado.tail(1).index, inplace=True)
+    df.drop(total_por_estado.tail(1).index, inplace=True)
 
 #Var4
 tabela_de_epocas_festivas_com_dados = epocas_festivas()
