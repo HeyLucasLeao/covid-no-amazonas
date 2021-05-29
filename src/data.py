@@ -169,6 +169,8 @@ crescimento = pd.concat([crescimento_de_casos, crescimento_de_obitos])
 crescimento.sort_values(['date','variavel'], inplace=True)
 dici = {'crescimento_novos_obitos': "Óbitos", 'crescimento_novos_casos': 'Casos'}
 crescimento['variavel'] = crescimento['variavel'].apply(lambda x: dici[x])
+crescimento['date'] = pd.to_datetime(crescimento['date'])
+crescimento.set_index('date', inplace=True)
 
 #Var8
 media_casos_por_dia_da_semana = total_de_casos_amazonas.groupby('dia_da_semana')[['newCases', 'newDeaths', 'crescimento_novos_casos']].mean().round().reindex(['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'])
