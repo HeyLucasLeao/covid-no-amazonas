@@ -27,7 +27,7 @@ if box == 'Home':
     Selecione a página no canto superior esquerdo da tela.""")
     st.write("[Notícias da Fundação de Vigilância em Saúde do Amazonas (FVS-AM)](https://share.streamlit.io/heylucasleao/noticias-fvs-am/main)")
     st.write("[Covid19map](https://www.covid19map.com.br/)")
-    st.write("[Fonte deste repositório](https://github.com/HeyLucasLeao/covid-no-amazonas)")
+    st.write("[Repositório deste projeto](https://github.com/HeyLucasLeao/covid-no-amazonas)")
     st.write("[Contato](https://t.me/heylucasleao)")
     st.write("[LinkedIn](https://www.linkedin.com/in/lucas-le%C3%A3o-698a49206/)""")
 elif box == "Ranking por 100K Óbitos":
