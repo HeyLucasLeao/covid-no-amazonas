@@ -287,7 +287,11 @@ def show_dados_diarios_casos_e_obitos():
 
 
 def show_dados_diarios_obitos():
-    fig = px.bar(data_frame = total_de_casos_amazonas, x='date', y='newDeaths', color='newDeaths', labels={'newDeaths': 'Óbitos', 'date': 'Data'})
+    fig = px.bar(data_frame = total_de_casos_amazonas, 
+    x='date', 
+    y='newDeaths', 
+    labels={'newDeaths': 'Óbitos', 'date': 'Data'},
+    color_discrete_sequence=['#804545'])
 
     fig.update_traces(hovertemplate="%{y}", name='Óbitos')
     fig.add_trace(go.Scatter(x=total_de_casos_amazonas['date'], 
@@ -302,7 +306,7 @@ def show_dados_diarios_obitos():
 
     fig.add_trace(go.Scatter(x=tabela_de_epocas_festivas_com_dados['date'], 
                              y=tabela_de_epocas_festivas_com_dados['newDeaths'], 
-                             line=dict(color='steelblue', width=0.01),  
+                             line=dict(color='darkcyan', width=0.01),  
                              hovertemplate=tabela_de_epocas_festivas_com_dados['name'],
                              mode='markers',
                              showlegend=False,
