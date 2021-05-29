@@ -11,7 +11,7 @@ opcoes = (
     "Frequência Mensal",
     "Ranking por 100K Óbitos",
     "Quadro Evolutivo",
-    "Crescimento nos Últimos Dias",
+    "Crescimento Semanal",
     "Predição de Tendência",
     "Ocupação em Hospitais",
     "Média de Dados por Dia da Semana"
@@ -23,7 +23,7 @@ if box == 'Home':
     st.header("Dados sobre Covid-19 com foco no Amazonas")
     st.write("""Projeto pessoal para fins educativos com finalidade de uma análise extensa, crítica e exploratória dos dados de Covid-19 dentro do estado do Amazonas.
     Para isso, utilizo um [banco de dados](https://github.com/wcota/covid19br) junto a informações da Secretaria de Estado de Saúde do Amazonas.""")
-    st.write("[Notícias da Fundação de Vigilância em Saúde do Amazonas (FVS-AM)](https://github.com/HeyLucasLeao/noticias-FVS-AM)")
+    st.write("[Notícias da Fundação de Vigilância em Saúde do Amazonas (FVS-AM)](https://share.streamlit.io/heylucasleao/noticias-fvs-am/main)")
     st.write("[Covid19map](https://www.covid19map.com.br/case-map)")
     st.write("[Fonte deste repositório](https://github.com/HeyLucasLeao/covid-no-amazonas)")
     st.write("[Contato](https://t.me/heylucasleao)")
@@ -45,15 +45,16 @@ elif box == "Frequência Mensal":
 elif box == "Quadro Evolutivo":
     st.plotly_chart(show_quadro_evolutivo())
 elif box == "Dados Diários":
-    st.write("### Casos & Óbitos no Amazonas")
+    st.write("### Dados de Casos & Óbitos no Amazonas")
     st.plotly_chart(show_dados_diarios_casos_e_obitos())
+    st.write("### Dados de Óbitos no Amazonas")
     st.plotly_chart(show_dados_diarios_obitos())
 elif box == "Predição de Tendência":
     st.write("### Predição de Tendência de Casos")
     st.plotly_chart(show_predicao())
     st.write(f'###### Média de Erro Percentual: {smape} %')
-elif box == "Crescimento nos Últimos Dias":
-    st.plotly_chart(show_crescimento_dos_ultimos_14_dias())
+elif box == "Crescimento Semanal":
+    st.plotly_chart(show_crescimento())
 elif box == "Ocupação em Hospitais":
     st.plotly_chart(show_ocupacao_em_hospitais())
 elif box == "Média de Dados por Dia da Semana":

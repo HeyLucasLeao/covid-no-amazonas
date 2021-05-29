@@ -12,7 +12,7 @@ import warnings
 warnings.filterwarnings("ignore")
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 rgb = 'rgb(34, 34, 34)'
-red = '#812929'
+line_color = '#d9d9d9'
 GLOBAL_TEMPLATE = 'plotly_dark'
 MAPBOX_TOKEN = 'pk.eyJ1IjoiaGV5bHVjYXNsZWFvIiwiYSI6ImNrcDRqeW1yNzAzaHIycHNiZWo1bHBqeGkifQ.kw4Buc12S2g1CTZ7KhXwYA'
 
@@ -240,32 +240,33 @@ def show_dados_diarios_casos_e_obitos():
                  x='date', 
                  y='newCases', 
                  hover_data={"newCases": ":,2f", 'newDeaths': ":,2f",'date': False}, 
-                 labels={"newCases": "Novos Casos", "date": 'Data', 'newDeaths': 'Novos Óbitos'},
-                 color = 'newCases', 
-                 opacity= 0.75)
+                 labels={"newCases": "Novos Casos", "date": 'Data', 'newDeaths': 'Novos Óbitos'}, 
+                 color_discrete_sequence=['#804545'])
 
     fig.add_trace(go.Scatter(x=total_de_casos_amazonas['date'],
                              y=tendencia_de_novos_casos.round(), 
-                             line=dict(color=red, width=1), 
+                             line=dict(color=line_color, width=1), 
                              name="Holt-Winters (SEHW) - Casos",
                              mode='lines', 
                              hoverinfo="y", 
                              showlegend=False, 
-                             hovertemplate="%{y}"))
+                             hovertemplate="%{y}",
+                             opacity=0.50))
 
 
     fig.add_trace(go.Scatter(x=total_de_casos_amazonas['date'], 
                              y=tendencia_de_novas_mortes, 
-                             line=dict(color=red, width=1), 
+                             line=dict(color=line_color, width=1, smoothing=0.25), 
                              name="Holt-Winters (SEHW) - Óbitos",
                              mode='lines',
                              hoverinfo='y' , 
                              showlegend=False, 
-                             hovertemplate="%{y}"))
+                             hovertemplate="%{y}",
+                             opacity=0.50))
 
     fig.add_trace(go.Scatter(x=tabela_de_epocas_festivas_com_dados['date'], 
                              y=tabela_de_epocas_festivas_com_dados['newCases'], 
-                             line=dict(color='steelblue', width=0.01),  
+                             line=dict(color='darkcyan', width=0.01),  
                              hovertemplate=tabela_de_epocas_festivas_com_dados['name'],
                              mode='markers',
                              showlegend=False,
@@ -291,7 +292,7 @@ def show_dados_diarios_obitos():
     fig.update_traces(hovertemplate="%{y}", name='Óbitos')
     fig.add_trace(go.Scatter(x=total_de_casos_amazonas['date'], 
                              y=tendencia_de_novas_mortes, 
-                             line=dict(color=red, width=1), 
+                             line=dict(color=line_color, width=1), 
                              name="Holt-Winters (SEHW) - Óbitos",
                              mode='lines',
                              hoverinfo='y' , 
@@ -321,18 +322,18 @@ def show_dados_diarios_obitos():
 
 
 
-def show_crescimento_dos_ultimos_14_dias():    
+def show_crescimento():    
     ###Criação de Gráfico
-    fig = px.bar(crescimento.tail(14).round(2), 
+    fig = px.bar(crescimento, 
                   y='valor',
-                  x='date', 
+                  x=crescimento.index, 
                   color = 'valor',
                   labels = {'valor': 'Percentual (%)', 'date': 'Data', 'percentual': "Percentual (%)"},
-                color_continuous_scale=['mediumaquamarine', 'maroon'],
-                width=800, height=800,facet_col='variavel')
+                color_continuous_scale=["#675067","#60748C","#50999F","#60BC9A","#9DD986","#F1ED77"],
+                width=1600, height=800,facet_row='variavel')
 
 
-    fig.update_traces(hovertemplate="%{y} %")
+    fig.update_traces(hovertemplate="%{y:.2f} %")
     fig.update_layout(hovermode='x', 
                       separators=",.",
                       template=GLOBAL_TEMPLATE,
@@ -344,7 +345,7 @@ def show_crescimento_dos_ultimos_14_dias():
     fig.add_hline(y=0)
     
     
-    tickvals, ticktext = traduzir_eixo_x(crescimento['date'].tail(14), 0, 4)
+    tickvals, ticktext = traduzir_eixo_x(crescimento.index, 0, 60)
     
     ticktext = [x[:-4] for x in ticktext]
     
@@ -352,7 +353,10 @@ def show_crescimento_dos_ultimos_14_dias():
                      tickvals=tickvals, 
                      ticktext=ticktext)
     fig.update_yaxes(matches=None)
+    fig.update_coloraxes(showscale=False)
     return fig
+
+
 
 def show_dia_da_semana():
     fig = px.bar(media_casos_por_dia_da_semana, 
@@ -421,7 +425,7 @@ def show_predicao():
 
     fig.add_trace(go.Scatter(x=total_de_casos_amazonas['date'].tail(30),
                              y=tendencia_de_novos_casos.round().tail(30), 
-                             line=dict(color=red, width=1), 
+                             line=dict(color='#804545', width=1), 
                              name="Holt-Winters (SEHW) - Casos",
                              mode='lines', 
                              hoverinfo="y", 
@@ -431,7 +435,7 @@ def show_predicao():
 
     fig.add_trace(go.Scatter(x=y_pred.index, 
                              y=y_pred.values, 
-                             line=dict(color=red, width=1), 
+                             line=dict(color='#804545', width=1), 
                              name=f"Predição por LightGBM",
                              mode='lines+markers',
                              hoverinfo='y' , 
