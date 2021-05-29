@@ -355,8 +355,10 @@ def show_crescimento():
     
     fig.update_xaxes(tickformat= '%y/%m/%d', 
                      tickvals=tickvals, 
-                     ticktext=ticktext)
+                     ticktext=ticktext,
+                     tickangle=35)
     fig.update_yaxes(matches=None)
+    fig.update_xaxes(showticklabels=True)
     fig.update_coloraxes(showscale=False)
     return fig
 
