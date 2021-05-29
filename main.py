@@ -41,11 +41,11 @@ while True:
              shell=True, 
              cwd=r'raspagem_dos_boletins_diarios'), 
                 timeout=360)
+            with open(r'push_automatico/upar_dados.py', "r") as f:
+                exec(f.read())
+            break
         except Error:
             raise SystemExit(0)
-
-        with open(r'push_automatico/upar_dados.py', "r") as f:
-            exec(f.read())
     else:
         x += 1
         for i in reversed(range(30)):
