@@ -5,12 +5,12 @@ import pandas as pd
 import numpy as np
 import geopandas as gpd
 
-PATH_PDF = r'../raspagem_dos_boletins_diarios/relatorios'
-PATH_CSV_RAW = r'../raspagem_dos_boletins_diarios/raw_csvs'
-PATH_CSV_NORMALIZED = r'../raspagem_dos_boletins_diarios/normalized_csvs'
+PATH_PDF = r'./raspagem_dos_boletins_diarios/relatorios'
+PATH_CSV_RAW = r'./raspagem_dos_boletins_diarios/raw_csvs'
+PATH_CSV_NORMALIZED = r'./raspagem_dos_boletins_diarios/normalized_csvs'
 
 def epocas_festivas():
-    epocas_festivas = pd.read_csv(r'../epocas_festivas/epocas_festivas.csv')
+    epocas_festivas = pd.read_csv(r'./epocas_festivas/epocas_festivas.csv')
     epocas_festivas['date'] = ['2020-' + x for x in epocas_festivas['date'] if '2020-' not in x] #feito manualmente, necessário otimizar
     feriados_ano_atual = [(x.replace('2020-','2021-'),y) for x,y in zip(epocas_festivas['date'], epocas_festivas['name']) if '2021-' not in x]
     feriados_ano_atual = pd.DataFrame(feriados_ano_atual, columns=['date', 'name'])
