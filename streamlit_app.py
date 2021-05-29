@@ -23,6 +23,7 @@ if box == 'Home':
     st.header("Dados sobre Covid-19 com foco no Amazonas")
     st.write("""Projeto pessoal para fins educativos com finalidade de uma análise extensa, crítica e exploratória dos dados de Covid-19 dentro do estado do Amazonas.
     Para isso, utilizo um [banco de dados](https://github.com/wcota/covid19br) junto a informações da Secretaria de Estado de Saúde do Amazonas.
+    
     Selecione a página no canto esquerdo da tela.""")
     st.write("[Notícias da Fundação de Vigilância em Saúde do Amazonas (FVS-AM)](https://share.streamlit.io/heylucasleao/noticias-fvs-am/main)")
     st.write("[Covid19map](https://www.covid19map.com.br/)")
