@@ -1,7 +1,6 @@
 from git import Repo
 from os import environ
 from time import sleep
-from subprocess import Popen
 
 """inicia um push direto ao repo."""
 
