@@ -5,12 +5,12 @@ import pandas as pd
 import numpy as np
 import geopandas as gpd
 
-PATH_PDF = r'./raspagem_dos_boletins_diarios/relatorios'
-PATH_CSV_RAW = r'./raspagem_dos_boletins_diarios/raw_csvs'
-PATH_CSV_NORMALIZED = r'./raspagem_dos_boletins_diarios/normalized_csvs'
+PATH_PDF = r'../raspagem_dos_boletins_diarios/relatorios'
+PATH_CSV_RAW = r'../raspagem_dos_boletins_diarios/raw_csvs'
+PATH_CSV_NORMALIZED = r'../raspagem_dos_boletins_diarios/normalized_csvs'
 
 def epocas_festivas():
-    epocas_festivas = pd.read_csv(r'./epocas_festivas/epocas_festivas.csv')
+    epocas_festivas = pd.read_csv(r'../epocas_festivas/epocas_festivas.csv')
     epocas_festivas['date'] = ['2020-' + x for x in epocas_festivas['date'] if '2020-' not in x] #feito manualmente, necessário otimizar
     feriados_ano_atual = [(x.replace('2020-','2021-'),y) for x,y in zip(epocas_festivas['date'], epocas_festivas['name']) if '2021-' not in x]
     feriados_ano_atual = pd.DataFrame(feriados_ano_atual, columns=['date', 'name'])
@@ -119,18 +119,15 @@ total_por_estado = pd.read_csv('https://raw.githubusercontent.com/wcota/covid19b
                                    'vaccinated_per_100k_inhabitants'
                                        ]
                               )
+
+if df[df['state'] == 'AM']['newCases'].head(1).values <= 0:
+    df.drop(df.head(1).index, inplace=True)
+if total_por_estado[total_por_estado['state'] == 'AM']['newCases'].tail(1).values <= 0:
+    total_por_estado.drop(total_por_estado.tail(1).index, inplace=True)
+
 total_por_estado = total_por_estado.query(f"date == '{last_info}' and state != 'TOTAL'")
 dici = dict([(x,y) for x,y in zip(gjson_estados_brasileiros['sigla'], gjson_estados_brasileiros['name'])])
 total_por_estado['name'] = [dici[x] for x in total_por_estado['state']]
-
-total_estado_novos_casos = total_por_estado.query(
-            f"state == 'AM' and date == '{last_info}'")['newCases'].values[0]
-total_novos_casos = df.query(f"state == 'AM' and last_info_date == '{last_info}' and city != 'CASO SEM LOCALIZAÇÃO DEFINIDA/AM'")[
-            'newCases'].sum()
-            
-if total_estado_novos_casos <= 0 and total_novos_casos <= 0:
-    total_por_estado.drop(total_por_estado.tail(1).index, inplace=True)
-    df.drop(total_por_estado.tail(1).index, inplace=True)
 
 #Var4
 tabela_de_epocas_festivas_com_dados = epocas_festivas()
