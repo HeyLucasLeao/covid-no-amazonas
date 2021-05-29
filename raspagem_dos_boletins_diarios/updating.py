@@ -150,6 +150,7 @@ taxa_de_ocupacao['leitos_clinicos_covid-19'] = [x.split()[-1] for x in taxa_de_o
 if len(taxa_de_ocupacao.columns) == 7 and taxa_de_ocupacao.isnull().sum().sum() == 0:
     atualizar_csvs()
     print('CSVs atualizados.')
+    sleep(10)
 else:
     print('Taxa não extraída corretamente, favor verificar.')
     sleep(10)

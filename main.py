@@ -37,7 +37,7 @@ while True:
         try:
             print('Atualizando csvs...')
             from subprocess import Popen
-            Popen.wait(Popen('conda run -n covid-19-am python updating.py',
+            Popen.wait(Popen('conda run -n covid-no-amazonas python updating.py',
              shell=True, 
              cwd=r'raspagem_dos_boletins_diarios'), 
                 timeout=360)

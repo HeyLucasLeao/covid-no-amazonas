@@ -8,7 +8,7 @@ from subprocess import Popen
 user = environ.get('GITHUB_USER')
 password = environ.get('GITHUB_PASSWORD')
 PATH = environ.get('REPO_PATH')
-remote = f"https://{user}:{password}@github.com:HeyLucasLeao/HeyLucasLeao.github.io.git"
+remote = f"https://{user}:{password}@github.com:HeyLucasLeao/covid-no-amazonas.git"
 
 
 def git_push():
@@ -23,14 +23,6 @@ def git_push():
     except:
         print('Erro durante tentativa de push.')
 
-def heroku():
-    print('Atualizando heroku...')
-    Popen.wait(Popen('git push heroku master',
-                     cwd=PATH, shell=True), 
-                     timeout=360)
-
 git_push()
 print('Push feito com sucesso.')
-heroku()
-print('Atualização feita com sucesso.')
 sleep(15)
