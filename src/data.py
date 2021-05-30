@@ -2,18 +2,27 @@ from statsmodels.tsa.filters.hp_filter import hpfilter
 import pandas as pd
 import numpy as np
 import geopandas as gpd
-from datetime import datetime
-from src.keeping_updating import *
+from os import listdir
 import warnings
 warnings.filterwarnings("ignore")
 
-ocupacao_em_hospitais = updating_csvs()
-df = updating_df()
-total_por_estado = updating_total_por_estado()
-y_pred, smape = predicao()
+dias_traduzidos = {'Monday': 'Segunda', 
+                    'Tuesday': 'Terça',
+                    'Wednesday': 'Quarta',
+                    'Thursday': 'Quinta',
+                    'Friday': 'Sexta',
+                    'Saturday': 'Sábado',
+                    'Sunday': 'Domingo'}
+
+gjson_estados_brasileiros = gpd.read_file(r'src/geojson/brazil-states.geojson')
+gjson_municipios_amazonas = gpd.read_file(r'src/geojson/amazonas.json')
+gjson_estados_brasileiros.set_index('id', inplace=True)
+gjson_municipios_amazonas.set_index('id', inplace=True)
+
+#=============================================================================================================
 
 def epocas_festivas():
-    epocas_festivas = pd.read_csv(r'./epocas_festivas/epocas_festivas.csv')
+    epocas_festivas = pd.read_csv(r'epocas_festivas/epocas_festivas.csv')
     epocas_festivas['date'] = ['2020-' + x for x in epocas_festivas['date'] if '2020-' not in x] #feito manualmente, necessário otimizar
     feriados_ano_atual = [(x.replace('2020-','2021-'),y) for x,y in zip(epocas_festivas['date'], epocas_festivas['name']) if '2021-' not in x]
     feriados_ano_atual = pd.DataFrame(feriados_ano_atual, columns=['date', 'name'])
@@ -27,27 +36,64 @@ def dados_apresentaveis(x):
     x = x.replace(',','.')
     return x
 
-
 def to_zero(x):
     if x < 0:
         x = 0
     return x
 
 
-dias_traduzidos = {'Monday': 'Segunda', 
-                    'Tuesday': 'Terça',
-                    'Wednesday': 'Quarta',
-                    'Thursday': 'Quinta',
-                    'Friday': 'Sexta',
-                    'Saturday': 'Sábado',
-                    'Sunday': 'Domingo'}
+def updating_csvs():
+    PATH_CSV_NORMALIZED = r'raspagem_dos_boletins_diarios/normalized_csvs'
+    normalized_csvs = listdir(PATH_CSV_NORMALIZED)
+    dici = {'leitos_clinicos_covid-19': 'Leitos Clínicos (Covid-19)',
+    'leitos_clinicos_geral': 'Leitos Clínicos (Geral)',
+    'sala_vermelha_covid-19': 'Sala Vermelha (Covid-19)',
+    'sala_vermelha_geral': 'Sala Vermelha (Geral)',
+    'uti_covid-19': 'UTI (Covid-19)',
+    'uti_geral': 'UTI (Geral)'}
 
-gjson_municipios_amazonas = gpd.read_file(r'./src/geojson/amazonas.json')
-gjson_estados_brasileiros.set_index('id', inplace=True)
-gjson_municipios_amazonas.set_index('id', inplace=True)
+    ocupacao_em_hospitais = pd.DataFrame()
+    for file in normalized_csvs:
+        dados_normalizados = pd.read_csv(PATH_CSV_NORMALIZED + r'/' + file)
+        dados_normalizados.rename(columns = {'Rede Publica': 'Rede Pública',
+        'Adulto (total)':'Adulto (Total)',
+        'Oncologico': 'Oncológico',
+        'Cardiaco': 'Cardíaco'}, inplace=True)
+        name = dici[file[:file.index('.')]]
+        dados_normalizados.insert(0, column='Unidade', value=name)
+        ocupacao_em_hospitais = pd.concat([ocupacao_em_hospitais, dados_normalizados])
 
-last_info = str(datetime.now())[:10]
+    ocupacao_em_hospitais['Data'] = ['20' + x for x in ocupacao_em_hospitais['Data']]
+    ocupacao_em_hospitais['Data'] = pd.to_datetime(ocupacao_em_hospitais['Data'])
+    ocupacao_em_hospitais.fillna(0, inplace=True)
 
+    return ocupacao_em_hospitais
+
+def updating_df():
+    df = pd.read_csv(r"src/gzip/dados-de-covid-no-brasil.csv.gz", compression='gzip')
+    df['date'] = pd.to_datetime(df['date'])
+    df = df.query("city != 'TOTAL'")
+    df['city'] = [x for x in df['city'] if x[:28] != 'CASO SEM LOCALIZAÇÃO DEFINIDA']
+    df.sort_values('totalCases', ascending=False,inplace=True)
+    return df
+
+def updating_total_por_estado():
+    total_por_estado = pd.read_csv(r'./src/gzip/total-por-estado.csv.gz')
+    dici = dict([(x,y) for x,y in zip(gjson_estados_brasileiros['sigla'], gjson_estados_brasileiros['name'])])
+    total_por_estado['name'] = [dici[x] for x in total_por_estado['state']]
+    return total_por_estado
+
+def predicao():
+    y_pred = pd.read_csv(r'src/pred/y_pred.csv')
+
+    with open(r'src/pred/smape.txt', 'r+') as file:
+        smape = file.read()
+    return y_pred, smape
+
+ocupacao_em_hospitais = updating_csvs()
+df = updating_df()
+total_por_estado = updating_total_por_estado()
+y_pred, smape = predicao()
 #Importar dados de Ocupação em Hospital
 
 #Var1
@@ -73,7 +119,7 @@ total_gjson_por_estado = total_por_estado
 total_gjson_por_estado.reset_index(inplace=True)
 total_gjson_por_estado['id'] = [(i + 1) for i in range(len(total_gjson_por_estado['state']))]
 total_gjson_por_municipio = df.query("state == 'AM' and city != 'CASO SEM LOCALIZAÇÃO DEFINIDA/AM'")
-total_gjson_por_municipio = total_gjson_por_municipio.query(f"date == '{last_info}'")
+total_gjson_por_municipio = total_gjson_por_municipio.query(f"date == date.max()")
 dici = dict([(x,y) for x,y in zip(gjson_municipios_amazonas.name, gjson_municipios_amazonas.index)])
 total_gjson_por_municipio['city'] = [x[:x.index('/')] for x in total_gjson_por_municipio['city']]
 total_gjson_por_municipio['id'] = [dici[x] for x in total_gjson_por_municipio['city']]
@@ -113,6 +159,7 @@ _, tendencia_de_novos_casos = hpfilter(total_de_casos_amazonas['newCases'])
 tendencia_de_novos_casos = tendencia_de_novos_casos.apply(to_zero)
 _, tendencia_de_novas_mortes = hpfilter(total_de_casos_amazonas['newDeaths'])
 tendencia_de_novas_mortes = tendencia_de_novas_mortes.apply(to_zero).round()
+
 #Var10
 ranking_nacional = total_por_estado[['state', 'newDeaths', 'deaths', 'newCases',	'totalCases', 'deaths_per_100k_inhabitants', 'totalCases_per_100k_inhabitants', 'vaccinated',	'vaccinated_per_100k_inhabitants', 'name']]
 ranking_nacional.set_index('state', inplace=True)
@@ -140,18 +187,18 @@ ranking_nacional = ranking_nacional.rename(columns={'name': 'Estado',
                                                                 'vaccinated_per_100k_inhabitants': "Vacinados por 100k Habitantes"})
 ranking_nacional.index = np.arange(1, len(ranking_nacional) + 1)
 ranking_nacional = ranking_nacional[['Estado', 
-                                                'Sigla', 
-                                                'Novos Casos', 
-                                                'Novos Óbitos', 
-                                                'Total de Casos', 
-                                                'Total de Óbitos', 
-                                                'Total de Casos por 100k Habitantes', 
-                                                'Óbitos por 100k Habitantes', 
-                                                'Vacinados', 
-                                                'Vacinados por 100k Habitantes']]
+                                               'Sigla', 
+                                               'Novos Casos', 
+                                               'Novos Óbitos', 
+                                               'Total de Casos', 
+                                               'Total de Óbitos', 
+                                               'Total de Casos por 100k Habitantes', 
+                                               'Óbitos por 100k Habitantes', 
+                                               'Vacinados', 
+                                               'Vacinados por 100k Habitantes']]
 ranking_nacional.drop(columns=['Novos Casos', 'Novos Óbitos', 'Total de Casos'], axis=1, inplace=True)
 #Var11
-ranking_municipal = df.query(f"state == 'AM' and city != 'CASO SEM LOCALIZAÇÃO DEFINIDA/AM' and date == '{last_info}'")
+ranking_municipal = df.query(f"state == 'AM' and city != 'CASO SEM LOCALIZAÇÃO DEFINIDA/AM' and date == date.max()")
 ranking_municipal = ranking_municipal[['city', 'newDeaths', 'deaths', 'deaths_per_100k_inhabitants', 'totalCases_per_100k_inhabitants', 'deaths_by_totalCases']]
 ranking_municipal['city'] = [x[:x.index('/')] for x in ranking_municipal['city']]
 ranking_municipal['newDeaths'] = ranking_municipal['newDeaths'].apply(dados_apresentaveis)

@@ -4,7 +4,6 @@ from sktime.forecasting.model_evaluation import evaluate
 from sktime.forecasting.compose import make_reduction
 import numpy as np
 import pandas as pd
-import datetime as dt
 from src.data import tendencia_de_novos_casos, total_de_casos_amazonas
 
 def treinando_e_prevendo():

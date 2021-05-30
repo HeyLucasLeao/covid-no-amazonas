@@ -4,18 +4,15 @@ import datetime as dt
 from os import system
 from time import sleep
 from subprocess import Popen
-from datetime import datetime
 from src.model import treinando_e_prevendo
 
 x = 0
-
-last_info = str(datetime.now())[:10]
 
 while True:
     try:
         url = 'https://raw.githubusercontent.com/wcota/covid19br/master/cases-brazil-cities.csv'
         df = pd.read_csv(url)
-        data = str(dt.datetime.now() - dt.timedelta(1))[:10] 
+        data = str(dt.datetime.now())[:10] 
         df_estado = pd.read_csv(
             'https://raw.githubusercontent.com/wcota/covid19br/master/cases-brazil-states.csv')
         df_estado_soma_casos = df_estado.query(
@@ -72,7 +69,7 @@ while True:
                                                 ]
 )
 
-            total_por_estado = total_por_estado.query(f"date == '{last_info}' and state != 'TOTAL'")
+            total_por_estado = total_por_estado.query(f"date == '{data}' and state != 'TOTAL'")
             total_por_estado.to_csv(r'./src/gzip/total-por-estado.csv.gz', compression="gzip", index=False)
             print('Dados atualizados!')
             sleep(10)
@@ -89,8 +86,8 @@ while True:
              shell=True, 
              cwd=r'raspagem_dos_boletins_diarios'), 
                 timeout=360)
-            #with open(r'push_automatico/upar_dados.py', "r") as f:
-            #    exec(f.read())
+            with open(r'push_automatico/upar_dados.py', "r") as f:
+                exec(f.read())
             print("Processo finalizado.")
             sleep(10)
             break
