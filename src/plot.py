@@ -6,7 +6,6 @@ import plotly.express as px
 
 from src.data import *
 from src.functions_to_date import *
-from src.model import y_pred
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -408,7 +407,7 @@ def show_ocupacao_em_hospitais():
     fig.update_xaxes(showticklabels=True)
     fig.update_yaxes(matches=None)
     
-    tickvals, ticktext = traduzir_eixo_x(ocupacao_em_hospitais['Data'], 0, 14)
+    tickvals, ticktext = traduzir_eixo_x(ocupacao_em_hospitais['Data'], 0, 30)
     
     ticktext = [x[:-4] for x in ticktext]
     
@@ -439,8 +438,8 @@ def show_predicao():
                              hovertemplate="%{y}",
                              fillcolor='Gray'))
 
-    fig.add_trace(go.Scatter(x=y_pred.index, 
-                             y=y_pred.values, 
+    fig.add_trace(go.Scatter(x=y_pred['index'], 
+                             y=y_pred['0'], 
                              line=dict(color='#804545', width=1), 
                              name=f"Predição por LightGBM",
                              mode='lines+markers',
@@ -458,9 +457,10 @@ def show_predicao():
                         font=dict(size=11),
                      paper_bgcolor=rgb,
                      plot_bgcolor=rgb)
-    
+    y_pred['index'] = pd.to_datetime(y_pred['index'])
+
     tickvals, ticktext = traduzir_eixo_x(total_de_casos_amazonas['date'].tail(30), 6, 7)
-    tickvals_pred, ticktext_pred = traduzir_eixo_x(y_pred.index, 4, 7)
+    tickvals_pred, ticktext_pred = traduzir_eixo_x(y_pred['index'], 4, 7)
     
     tickvals.extend(tickvals_pred)
     ticktext.extend(ticktext_pred)

@@ -1,5 +1,4 @@
 .ipynb_checkpoints
-*.gz
 __pycache__
 debug.log
 *.pyc
