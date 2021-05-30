@@ -1,7 +1,6 @@
 import streamlit as st
-from src.data import ranking_nacional, ranking_municipal
+from src.data import ranking_nacional, ranking_municipal, smape
 from src.plot import *
-from src.model import smape
 
 opcoes = (
     'Home',
