@@ -14,7 +14,7 @@ dias_traduzidos = {'Monday': 'Segunda',
                     'Saturday': 'Sábado',
                     'Sunday': 'Domingo'}
 
-gjson_estados_brasileiros = gpd.read_file(r'src/geojson/brazil-states.geojson')
+gjson_estados_brasileiros = gpd.read_file(r'src/geojson/brasil.geojson')
 gjson_municipios_amazonas = gpd.read_file(r'src/geojson/amazonas.json')
 gjson_estados_brasileiros.set_index('id', inplace=True)
 gjson_municipios_amazonas.set_index('id', inplace=True)
@@ -70,7 +70,7 @@ def updating_csvs():
     return ocupacao_em_hospitais
 
 def updating_df():
-    df = pd.read_csv(r"src/gzip/dados-de-covid-no-brasil.csv.gz", compression='gzip')
+    df = pd.read_csv(r"src/datasets/dados-de-covid-no-brasil.csv.gz", compression='gzip')
     df['date'] = pd.to_datetime(df['date'])
     df = df.query("city != 'TOTAL'")
     df['city'] = [x for x in df['city'] if x[:28] != 'CASO SEM LOCALIZAÇÃO DEFINIDA']
@@ -78,7 +78,7 @@ def updating_df():
     return df
 
 def updating_total_por_estado():
-    total_por_estado = pd.read_csv(r'./src/gzip/total-por-estado.csv.gz')
+    total_por_estado = pd.read_csv(r'./src/datasets/total-por-estado.csv.gz')
     dici = dict([(x,y) for x,y in zip(gjson_estados_brasileiros['sigla'], gjson_estados_brasileiros['name'])])
     total_por_estado['name'] = [dici[x] for x in total_por_estado['state']]
     return total_por_estado

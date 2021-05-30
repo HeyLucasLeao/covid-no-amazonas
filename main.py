@@ -50,7 +50,7 @@ while True:
             df = df.query("city != 'TOTAL'")
             df['city'] = [x for x in df['city'] if x[:28] != 'CASO SEM LOCALIZAÇÃO DEFINIDA']
             df.sort_values('totalCases', ascending=False,inplace=True)
-            df.to_csv(r"./src/gzip/dados-de-covid-no-brasil.csv.gz", index=False, compression="gzip")
+            df.to_csv(r"./src/datasets/dados-de-covid-no-brasil.csv.gz", index=False, compression="gzip")
             
             url = 'https://raw.githubusercontent.com/wcota/covid19br/master/cases-brazil-states.csv'
             total_por_estado = pd.read_csv(url, 
@@ -70,7 +70,7 @@ while True:
 )
 
             total_por_estado = total_por_estado.query(f"date == '{data}' and state != 'TOTAL'")
-            total_por_estado.to_csv(r'./src/gzip/total-por-estado.csv.gz', compression="gzip", index=False)
+            total_por_estado.to_csv(r'./src/datasets/total-por-estado.csv.gz', compression="gzip", index=False)
             print('Dados atualizados!')
             sleep(10)
             print('Extraindo predição...')
