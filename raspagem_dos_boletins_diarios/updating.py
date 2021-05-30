@@ -85,10 +85,10 @@ data = [x + "_" for x in data]
 data = "".join(data)
 data_url_acento = data
 data_url_sem_acento = data
-AREA = [265.022,
-413.384,
-373.253,
-829.774]
+AREA = [574.224,
+927.413,
+831.514,
+1820.911]
 
 while True:
     try:
@@ -131,7 +131,7 @@ else:
     link = r'http://www.fvs.am.gov.br/media/publicacao/{data_url_sem_acento}BOLETIM_DIARIO_DE_CASOS_COVID-19.pdf'
     data = data_url_sem_acento
 
-taxa_de_ocupacao.drop(index=[0, 1, 8],columns=['Unnamed: 5'], inplace=True)
+taxa_de_ocupacao.drop(index=[0, 1, 8, 12],columns=['Unnamed: 5'], inplace=True)
 
 taxa_de_ocupacao.rename(columns={'Unnamed: 0': 'unidade',
                                  'Unnamed: 1': 'uti_geral',
@@ -141,8 +141,8 @@ taxa_de_ocupacao.rename(columns={'Unnamed: 0': 'unidade',
                                 'Unnamed: 4': 'sala_vermelha_geral',
                                 'Unnamed: 6': 'sala_vermelha_covid-19'}, inplace=True)
 
-#taxa_de_ocupacao['uti_geral'] = [x.split()[-1] for x in taxa_de_ocupacao['unidade']]
-#taxa_de_ocupacao['unidade'] = [" ".join(x.split()[:-1]) for x in taxa_de_ocupacao['unidade']]
+taxa_de_ocupacao['uti_geral'] = [x.split()[-1] for x in taxa_de_ocupacao['unidade']]
+taxa_de_ocupacao['unidade'] = [" ".join(x.split()[:-1]) for x in taxa_de_ocupacao['unidade']]
 taxa_de_ocupacao['uti_covid-19'] = taxa_de_ocupacao['leitos_clinicos_geral']
 taxa_de_ocupacao['leitos_clinicos_geral'] = [x.split()[:-1][0] for x in taxa_de_ocupacao['leitos_clinicos_covid-19']]
 taxa_de_ocupacao['leitos_clinicos_covid-19'] = [x.split()[-1] for x in taxa_de_ocupacao['leitos_clinicos_covid-19']]
