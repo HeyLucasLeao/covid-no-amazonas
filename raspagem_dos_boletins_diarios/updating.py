@@ -85,10 +85,7 @@ data = [x + "_" for x in data]
 data = "".join(data)
 data_url_acento = data
 data_url_sem_acento = data
-AREA = [574.224,
-927.413,
-831.514,
-1820.911]
+AREA = [265.693,425.635,382.493,813.915]
 
 while True:
     try:
@@ -123,12 +120,12 @@ while True:
         continue
         
 if pd.to_datetime(data_url_acento, format="%d_%m_%y_") > pd.to_datetime(data_url_sem_acento, format="%d_%m_%y_"):
-    taxa_de_ocupacao = read_pdf(f'https://www.fvs.am.gov.br/media/publicacao/{data_url_acento}BOLETIM_DI%C3%81RIO_DE_CASOS_COVID-19.pdf', pages=2, area=AREA, stream=True)[0]
     link = f'https://www.fvs.am.gov.br/media/publicacao/{data_url_acento}BOLETIM_DI%C3%81RIO_DE_CASOS_COVID-19.pdf'
+    taxa_de_ocupacao = read_pdf(link, pages=[2], area=AREA, stream=True)[0]
     data = data_url_acento
 else:
-    taxa_de_ocupacao = read_pdf(f'https://www.fvs.am.gov.br/media/publicacao/{data_url_sem_acento}BOLETIM_DIARIO_DE_CASOS_COVID-19.pdf', pages=2, area=AREA, stream=True)[0]
-    link = r'http://www.fvs.am.gov.br/media/publicacao/{data_url_sem_acento}BOLETIM_DIARIO_DE_CASOS_COVID-19.pdf'
+    link = f'http://www.fvs.am.gov.br/media/publicacao/{data_url_sem_acento}BOLETIM_DIARIO_DE_CASOS_COVID-19.pdf'
+    taxa_de_ocupacao = read_pdf(link, pages=[2], area=AREA, stream=True)[0]
     data = data_url_sem_acento
 
 taxa_de_ocupacao.drop(index=[0, 1, 8, 12],columns=['Unnamed: 5'], inplace=True)
