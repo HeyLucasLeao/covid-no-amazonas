@@ -2,10 +2,7 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 import plotly.express as px
-
-
-from src.data import *
-from src.functions_to_date import *
+from src.functions import *
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -16,21 +13,29 @@ GLOBAL_TEMPLATE = 'plotly_dark'
 MAPBOX_TOKEN = 'pk.eyJ1IjoiaGV5bHVjYXNsZWFvIiwiYSI6ImNrcDRqeW1yNzAzaHIycHNiZWo1bHBqeGkifQ.kw4Buc12S2g1CTZ7KhXwYA'
 
 def show_grafico_de_dispersao():
+    df = updating_df()
+
+    df = df.groupby('city').max().sort_values('totalCases', ascending=False).head(10)
+    df.reset_index(inplace=True)
+    df.sort_values('city', inplace=True)
+
+    total_por_estado = updating_total_por_estado()
+
     fig = make_subplots(subplot_titles=('10 Cidades com os Maiores Casos & Óbitos Registrados por COVID-19', 
                                         'Relação de Casos & Óbitos por 100k Habitantes por Estado'),
                         rows=1, cols=2)
 
     ### Configuração de gráfico a esquerda
-    fig.add_trace(go.Scatter(x = total_10_maiores_cidades['city'], 
-                             y= total_10_maiores_cidades['totalCases'],
+    fig.add_trace(go.Scatter(x = df['city'], 
+                             y= df['totalCases'],
                              mode='markers',
-                     marker=dict(color = total_10_maiores_cidades['totalCases'],
+                     marker=dict(color = df['totalCases'],
                                 colorscale= ['cyan', 'crimson'],
-                                size=total_10_maiores_cidades['totalCases'],
+                                size=df['totalCases'],
                                 sizemode='area',
                                 sizeref=110,
                                 showscale=False),
-                             text=total_10_maiores_cidades['deaths'],
+                             text=df['deaths'],
                              name='',
                             hovertemplate='<br>%{x}<br>' + 
                              '<br>N.º de Casos: %{y:,2f}<br>' + 
@@ -79,6 +84,24 @@ def show_grafico_de_dispersao():
 
 
 def show_mapa_nacional():
+    gjson_estados_brasileiros = gpd.read_file(r'src/geojson/brasil.geojson')
+    gjson_municipios_amazonas = gpd.read_file(r'src/geojson/amazonas.json')
+    gjson_estados_brasileiros.set_index('id', inplace=True)
+    gjson_municipios_amazonas.set_index('id', inplace=True)
+
+    total_por_estado = updating_total_por_estado()
+    total_gjson_por_estado = total_por_estado
+    total_gjson_por_estado.reset_index(inplace=True)
+    total_gjson_por_estado['id'] = [(i + 1) for i in range(len(total_gjson_por_estado['state']))]
+
+    df = updating_df()
+
+    total_gjson_por_municipio = df.query("state == 'AM' and city != 'CASO SEM LOCALIZAÇÃO DEFINIDA/AM'")
+    total_gjson_por_municipio = total_gjson_por_municipio.query(f"date == date.max()")
+    dici = dict([(x,y) for x,y in zip(gjson_municipios_amazonas.name, gjson_municipios_amazonas.index)])
+    total_gjson_por_municipio['city'] = [x[:x.index('/')] for x in total_gjson_por_municipio['city']]
+    total_gjson_por_municipio['id'] = [dici[x] for x in total_gjson_por_municipio['city']]
+
     fig = px.choropleth_mapbox(data_frame=total_gjson_por_estado, 
                                locations= 'id', 
                                geojson=gjson_estados_brasileiros, 
@@ -99,6 +122,23 @@ def show_mapa_nacional():
 
 
 def show_mapa_municipal():
+    gjson_estados_brasileiros = gpd.read_file(r'src/geojson/brasil.geojson')
+    gjson_municipios_amazonas = gpd.read_file(r'src/geojson/amazonas.json')
+    gjson_estados_brasileiros.set_index('id', inplace=True)
+    gjson_municipios_amazonas.set_index('id', inplace=True)
+
+    total_gjson_por_estado = updating_total_por_estado()
+    total_gjson_por_estado.reset_index(inplace=True)
+    total_gjson_por_estado['id'] = [(i + 1) for i in range(len(total_gjson_por_estado['state']))]
+
+    df = updating_df()
+
+    total_gjson_por_municipio = df.query("state == 'AM' and city != 'CASO SEM LOCALIZAÇÃO DEFINIDA/AM'")
+    total_gjson_por_municipio = total_gjson_por_municipio.query(f"date == date.max()")
+    dici = dict([(x,y) for x,y in zip(gjson_municipios_amazonas.name, gjson_municipios_amazonas.index)])
+    total_gjson_por_municipio['city'] = [x[:x.index('/')] for x in total_gjson_por_municipio['city']]
+    total_gjson_por_municipio['id'] = [dici[x] for x in total_gjson_por_municipio['city']]
+
     fig = px.choropleth_mapbox(data_frame=total_gjson_por_municipio, 
                                locations= 'id', 
                                geojson=gjson_municipios_amazonas, 
@@ -128,6 +168,14 @@ def show_mapa_municipal():
     return fig
 
 def show_dados_mensais():
+
+    df = updating_df()
+    total_de_casos_amazonas = updating_total_de_casos_amazonas(df)
+    #Var2
+    total_de_casos_amazonas_por_mes = total_de_casos_amazonas.set_index('date').groupby(pd.Grouper(freq='M')).sum()[['newDeaths','newCases']]
+    total_de_casos_amazonas_por_mes.reset_index(inplace=True)
+    total_de_casos_amazonas_por_mes['taxa_de_letalidade'] = round(total_de_casos_amazonas_por_mes['newDeaths']/total_de_casos_amazonas_por_mes['newCases'] * 100, 2)
+
     fig = make_subplots(subplot_titles=('Casos & Óbitos',
                                        'Taxa de letalidade (CFR)'), 
                         rows=1, cols=2)
@@ -186,6 +234,11 @@ def show_dados_mensais():
 
 
 def show_quadro_evolutivo():
+    df = updating_df()
+    total_de_casos_amazonas = updating_total_de_casos_amazonas(df)
+    total_de_casos_brasil = df.groupby('date').sum()
+    total_de_casos_brasil.reset_index(inplace=True)
+
     fig = make_subplots(subplot_titles=('Brasil',
                                        'Amazonas'),
                         rows=1, 
@@ -235,6 +288,11 @@ def show_quadro_evolutivo():
     return fig
 
 def show_dados_diarios_casos_e_obitos():
+    df = updating_df()
+    total_de_casos_amazonas = updating_total_de_casos_amazonas(df)
+    tendencia_de_novos_casos, tendencia_de_novas_mortes = updating_tendencias(total_de_casos_amazonas)
+    tabela_de_epocas_festivas_com_dados = epocas_festivas_com_dados(total_de_casos_amazonas)
+
     fig = px.bar(data_frame=total_de_casos_amazonas, 
                  x='date', 
                  y='newCases', 
@@ -286,6 +344,11 @@ def show_dados_diarios_casos_e_obitos():
 
 
 def show_dados_diarios_obitos():
+    df = updating_df()
+    total_de_casos_amazonas = updating_total_de_casos_amazonas(df)
+    _, tendencia_de_novas_mortes = updating_tendencias(total_de_casos_amazonas)
+    tabela_de_epocas_festivas_com_dados = epocas_festivas_com_dados(total_de_casos_amazonas)
+
     fig = px.bar(data_frame = total_de_casos_amazonas, 
     x='date', 
     y='newDeaths', 
@@ -326,6 +389,9 @@ def show_dados_diarios_obitos():
 
 
 def show_crescimento():    
+    df = updating_df()
+    total__de_casos_amazonas = updating_total_de_casos_amazonas(df)
+    crescimento, _ = updating_crescimento(total__de_casos_amazonas)
     ###Criação de Gráfico
     fig = px.bar(crescimento, 
                   y='valor',
@@ -364,6 +430,10 @@ def show_crescimento():
 
 
 def show_dia_da_semana():
+    df = updating_df()
+    total__de_casos_amazonas = updating_total_de_casos_amazonas(df)
+    _, media_casos_por_dia_da_semana = updating_crescimento(total__de_casos_amazonas)
+
     fig = px.bar(media_casos_por_dia_da_semana, 
                  y='Novos Casos', 
                  x=media_casos_por_dia_da_semana.index, 
@@ -385,6 +455,8 @@ def show_dia_da_semana():
     return fig
 
 def show_ocupacao_em_hospitais():
+    ocupacao_em_hospitais = updating_ocupacao_em_hospitais()
+
     fig = px.line(data_frame=ocupacao_em_hospitais,
               x='Data',
               y=ocupacao_em_hospitais.columns[2:],
@@ -407,7 +479,7 @@ def show_ocupacao_em_hospitais():
     fig.update_xaxes(showticklabels=True)
     fig.update_yaxes(matches=None)
     
-    tickvals, ticktext = traduzir_eixo_x(ocupacao_em_hospitais['Data'], 0, 30)
+    tickvals, ticktext = traduzir_eixo_x(ocupacao_em_hospitais['Data'], 0, 24)
     
     ticktext = [x[:-4] for x in ticktext]
     
@@ -418,6 +490,12 @@ def show_ocupacao_em_hospitais():
     return fig
 
 def show_predicao():
+    df = updating_df()
+    total_de_casos_amazonas = updating_total_de_casos_amazonas(df)
+    tendencia_de_novos_casos, _ = updating_tendencias(total_de_casos_amazonas)
+
+    y_pred = pd.read_csv(r'src/pred/y_pred.csv')
+    
     fig = go.Figure()
     
     
@@ -472,3 +550,10 @@ def show_predicao():
                      ticktext=ticktext)
 
     return fig
+
+def show_rankings():
+    df = updating_df()
+    total_por_estado = updating_total_por_estado()
+    ranking_nacional, ranking_municipal = updating_rankings(df, total_por_estado)
+
+    return ranking_nacional, ranking_municipal

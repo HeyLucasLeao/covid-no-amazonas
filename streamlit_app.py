@@ -1,5 +1,4 @@
 import streamlit as st
-from src.data import ranking_nacional, ranking_municipal, smape
 from src.plot import *
 
 opcoes = (
@@ -17,6 +16,8 @@ opcoes = (
 )
 
 box = st.sidebar.selectbox("Selecione a página", opcoes)
+st.sidebar.info("[Notícias da Fundação de Vigilância em Saúde do Amazonas (FVS-AM)](https://share.streamlit.io/heylucasleao/noticias-fvs-am/main)")
+st.sidebar.info("[Covid19map](https://www.covid19map.com.br/)")
 
 if box == 'Home':
     st.header("Dados sobre Covid-19 com foco no Amazonas")
@@ -24,12 +25,11 @@ if box == 'Home':
     Para isso, utilizo um [banco de dados](https://github.com/wcota/covid19br) junto a informações da Secretaria de Estado de Saúde do Amazonas.
     
     Selecione a página no canto superior esquerdo da tela.""")
-    st.write("[Notícias da Fundação de Vigilância em Saúde do Amazonas (FVS-AM)](https://share.streamlit.io/heylucasleao/noticias-fvs-am/main)")
-    st.write("[Covid19map](https://www.covid19map.com.br/)")
     st.write("[Repositório deste projeto](https://github.com/HeyLucasLeao/covid-no-amazonas)")
     st.write("[Contato](https://t.me/heylucasleao)")
     st.write("[LinkedIn](https://www.linkedin.com/in/lucas-le%C3%A3o-698a49206/)""")
 elif box == "Ranking por 100K Óbitos":
+    ranking_nacional, ranking_municipal = show_rankings()
     st.write("### Nacional")
     st.write(ranking_nacional)
     st.write("### Municipal")
@@ -53,6 +53,8 @@ elif box == "Dados Diários":
 elif box == "Predição de Tendência":
     st.write("### Predição de Tendência de Casos")
     st.plotly_chart(show_predicao())
+    with open(r'src/pred/smape.txt', 'r+') as file:
+        smape = file.read()
     st.write(f'###### Média de Erro Percentual: {smape} %')
 elif box == "Crescimento Semanal":
     st.plotly_chart(show_crescimento())
