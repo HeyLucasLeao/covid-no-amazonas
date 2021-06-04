@@ -53,7 +53,7 @@ elif box == "Dados Diários":
 elif box == "Predição de Tendência":
     st.write("### Predição de Tendência de Casos")
     st.plotly_chart(show_predicao())
-    with open(r'src/pred/smape.txt', 'r+') as file:
+    with open(r'src/pred/smape.txt', 'r') as file:
         smape = file.read()
     st.write(f'###### Média de Erro Percentual: {smape} %')
 elif box == "Crescimento Semanal":
