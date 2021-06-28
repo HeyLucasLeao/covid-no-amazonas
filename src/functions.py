@@ -207,7 +207,7 @@ def updating_ocupacao_em_hospitais():
     return ocupacao_em_hospitais
 
 def updating_rankings(df, total_por_estado):
-    ranking_nacional = total_por_estado[['state', 'newDeaths', 'deaths', 'newCases',	'totalCases', 'deaths_per_100k_inhabitants', 'totalCases_per_100k_inhabitants', 'vaccinated',	'vaccinated_per_100k_inhabitants', 'name']]
+    ranking_nacional = total_por_estado[['state', 'newDeaths', 'deaths', 'newCases',	'totalCases', 'deaths_per_100k_inhabitants', 'totalCases_per_100k_inhabitants', 'vaccinated',	'vaccinated_per_100_inhabitants', 'name']]
     ranking_nacional.set_index('state', inplace=True)
     ranking_nacional.sort_values('deaths_per_100k_inhabitants', ascending=False, inplace=True)
     ranking_nacional['newCases'] = ranking_nacional['newCases'].apply(dados_apresentaveis)
@@ -217,7 +217,7 @@ def updating_rankings(df, total_por_estado):
     ranking_nacional['totalCases_per_100k_inhabitants'] = ranking_nacional['totalCases_per_100k_inhabitants'].apply(dados_apresentaveis)
     ranking_nacional['deaths_per_100k_inhabitants'] = ranking_nacional['deaths_per_100k_inhabitants'].apply(dados_apresentaveis)
     ranking_nacional['vaccinated'] = ranking_nacional['vaccinated'].apply(dados_apresentaveis)
-    ranking_nacional['vaccinated_per_100k_inhabitants'] = ranking_nacional['vaccinated_per_100k_inhabitants'].apply(dados_apresentaveis)
+    ranking_nacional['vaccinated_per_100_inhabitants'] = ranking_nacional['vaccinated_per_100_inhabitants'].apply(dados_apresentaveis)
     ranking_nacional.reset_index(inplace=True)
     ranking_nacional = ranking_nacional.rename(columns={'name': 'Estado',
                                                                     'state': 'Sigla', 
@@ -230,7 +230,7 @@ def updating_rankings(df, total_por_estado):
                                                                     'newCases': 'Novos Casos', 
                                                                     'newDeaths': 'Novos Óbitos', 
                                                                     'vaccinated': "Vacinados", 
-                                                                    'vaccinated_per_100k_inhabitants': "Vacinados por 100k Habitantes"})
+                                                                    'vaccinated_per_100_inhabitants': "Vacinados por 100 Habitantes"})
     ranking_nacional.index = np.arange(1, len(ranking_nacional) + 1)
     ranking_nacional = ranking_nacional[['Estado', 
                                                 'Sigla', 
@@ -241,7 +241,7 @@ def updating_rankings(df, total_por_estado):
                                                 'Total de Casos por 100k Habitantes', 
                                                 'Óbitos por 100k Habitantes', 
                                                 'Vacinados', 
-                                                'Vacinados por 100k Habitantes']]
+                                                'Vacinados por 100 Habitantes']]
     ranking_nacional.drop(columns=['Novos Casos', 'Novos Óbitos', 'Total de Casos'], axis=1, inplace=True)
     #Var11
     ranking_municipal = df.query(f"state == 'AM' and city != 'CASO SEM LOCALIZAÇÃO DEFINIDA/AM' and date == date.max()")
