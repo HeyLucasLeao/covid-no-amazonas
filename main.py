@@ -65,7 +65,7 @@ while True:
                                             'deaths_per_100k_inhabitants', 
                                             'totalCases_per_100k_inhabitants',
                                             'deaths_by_totalCases',  'vaccinated',
-                                            'vaccinated_per_100k_inhabitants'
+                                            'vaccinated_per_100_inhabitants'
                                                 ]
 )
 
