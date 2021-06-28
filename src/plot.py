@@ -479,7 +479,7 @@ def show_ocupacao_em_hospitais():
     fig.update_xaxes(showticklabels=True)
     fig.update_yaxes(matches=None)
     
-    tickvals, ticktext = traduzir_eixo_x(ocupacao_em_hospitais['Data'], 0, 14)
+    tickvals, ticktext = traduzir_eixo_x(ocupacao_em_hospitais['Data'], 0, 30)
     
     ticktext = [x[:-4] for x in ticktext]
     
