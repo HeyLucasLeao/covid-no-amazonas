@@ -144,6 +144,11 @@ taxa_de_ocupacao['uti_covid-19'] = taxa_de_ocupacao['leitos_clinicos_geral']
 taxa_de_ocupacao['leitos_clinicos_geral'] = [x.split()[:-1][0] for x in taxa_de_ocupacao['leitos_clinicos_covid-19']]
 taxa_de_ocupacao['leitos_clinicos_covid-19'] = [x.split()[-1] for x in taxa_de_ocupacao['leitos_clinicos_covid-19']]
 
+for col in taxa_de_ocupacao.columns:
+    for i in range(len(taxa_de_ocupacao[col])):
+        if taxa_de_ocupacao[col].iloc[i] == "#DIV/0!":
+            taxa_de_ocupacao[col].iloc[i] = '0,00%'
+
 if len(taxa_de_ocupacao.columns) == 7 and taxa_de_ocupacao.isnull().sum().sum() == 0:
     atualizar_csvs()
     print('CSVs atualizados.')
