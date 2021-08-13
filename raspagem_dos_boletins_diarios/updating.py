@@ -85,7 +85,7 @@ data = [x + "_" for x in data]
 data = "".join(data)
 data_url_acento = data
 data_url_sem_acento = data
-AREA = [278.36,420.434,398.333,837.184]
+AREA = [266.783,423.591,383.6,818.241]
 
 while True:
     try:
