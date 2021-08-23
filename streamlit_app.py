@@ -50,12 +50,12 @@ elif box == "Dados Diários":
     st.plotly_chart(show_dados_diarios_casos_e_obitos())
     st.write("### Dados de Óbitos no Amazonas")
     st.plotly_chart(show_dados_diarios_obitos())
-elif box == "Predição de Tendência":
-    st.write("### Predição de Tendência de Casos")
-    st.plotly_chart(show_predicao())
-    with open(r'src/pred/smape.txt', 'r') as file:
-        smape = file.read()
-    st.write(f'###### Média de Erro Percentual: {smape} %')
+#elif box == "Predição de Tendência":
+#    st.write("### Predição de Tendência de Casos")
+#    st.plotly_chart(show_predicao())
+#    with open(r'src/pred/smape.txt', 'r') as file:
+#        smape = file.read()
+#    st.write(f'###### Média de Erro Percentual: {smape} %')
 elif box == "Crescimento Semanal":
     st.plotly_chart(show_crescimento())
 elif box == "Ocupação em Hospitais":
