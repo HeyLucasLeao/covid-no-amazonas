@@ -10,7 +10,7 @@ opcoes = (
     "Ranking por 100K Óbitos",
     "Quadro Evolutivo",
     "Crescimento Semanal",
-    "Predição de Tendência",
+    #"Predição de Tendência",
     "Ocupação em Hospitais",
     "Média de Dados por Dia da Semana"
 )
