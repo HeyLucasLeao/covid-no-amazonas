@@ -3,9 +3,8 @@ import pandas as pd
 import datetime as dt
 from os import system
 from time import sleep
-from subprocess import Popen
 from src.model import treinando_e_prevendo
-
+#from subprocess import Popen
 x = 0
 
 while True:
@@ -73,21 +72,20 @@ while True:
             total_por_estado.to_csv(r'./src/datasets/total-por-estado.csv.gz', compression="gzip", index=False)
             print('Dados atualizados!')
             sleep(10)
-            print('Extraindo predição...')
-            y_pred, smape = treinando_e_prevendo()
-            y_pred.to_csv(r'src/pred/y_pred.csv', index=False)
-            with open(r'src/pred/smape.txt', 'w+', encoding='utf-8') as file:
-                file.write(smape)
-            print('Predição extraída com sucesso!')
-            sleep(10)
-            print('Atualizando CSVs de ocupação...')
-            from subprocess import Popen
-            Popen.wait(Popen('conda run -n covid-no-amazonas python updating.py',
-             shell=True, 
-             cwd=r'raspagem_dos_boletins_diarios'), 
-                timeout=360)
-            with open(r'push_automatico/upar_dados.py', "r") as f:
-                exec(f.read())
+            #print('Extraindo predição...')
+            #y_pred, smape = treinando_e_prevendo()
+            #y_pred.to_csv(r'src/pred/y_pred.csv', index=False)
+            #with open(r'src/pred/smape.txt', 'w+', encoding='utf-8') as file:
+            #    file.write(smape)
+            #print('Predição extraída com sucesso!')
+            #sleep(10)
+            #print('Atualizando CSVs de ocupação...')
+            #Popen.wait(Popen('conda run -n covid-no-amazonas python updating.py',
+            # shell=True, 
+            # cwd=r'raspagem_dos_boletins_diarios'), 
+            #    timeout=360)
+            #with open(r'push_automatico/upar_dados.py', "r") as f:
+            #    exec(f.read())
             print("Processo finalizado.")
             sleep(10)
             break
